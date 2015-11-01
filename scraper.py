@@ -1,4 +1,3 @@
-
 # -*- coding: utf-8 -*-
 
 #### IMPORTS 1.0
@@ -9,7 +8,7 @@ import scraperwiki
 import urllib2
 from datetime import datetime
 from bs4 import BeautifulSoup
-import requests
+
 
 #### FUNCTIONS 1.0
 
@@ -46,13 +45,12 @@ def validateURL(url):
             count += 1
             r = urllib2.urlopen(url)
         sourceFilename = r.headers.get('Content-Disposition')
-
         if sourceFilename:
             ext = os.path.splitext(sourceFilename)[1].replace('"', '').replace(';', '').replace(' ', '')
         else:
             ext = os.path.splitext(url)[1]
         validURL = r.getcode() == 200
-        validFiletype = ext in ['.csv', '.xls', '.xlsx']
+        validFiletype = ext.lower() in ['.csv', '.xls', '.xlsx']
         return validURL, validFiletype
     except:
         print ("Error validating URL.")
@@ -89,7 +87,6 @@ entity_id = "t391_CR_tra"
 url = "http://www.crossrail.co.uk/about-us/freedom-information/transparency"
 errors = 0
 data = []
-period =['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC']
 
 #### READ HTML 1.0
 
@@ -109,16 +106,7 @@ for block in blocks:
         title = content.find('h3').text.split('Period')[-1].split(' ')
         url = content.find('a')['href']
         if '.csv' in url:
-            months = int(title[1])
-            csvMth = ''
-            if months > 10:
-                csvMth = period[months - 11]
-            elif 0 < months < 7:
-                csvMth = period[months + 2]
-            elif months == 7 or months == 8:
-                csvMth = period[9]
-            elif 7 < months < 11:
-                csvMth = period[months + 1]
+            csvMth = 'Q0'
             csvYr = title[2].split('-')[0].strip()
             csvMth = convert_mth_strings(csvMth.upper())
             data.append([csvYr, csvMth, url])
